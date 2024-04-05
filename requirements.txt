@@ -1,0 +1,4 @@
+gradio==4.25
+deepfilternet==0.5.6
+vinorm==2.0.7
+underthesea==6.8.0
