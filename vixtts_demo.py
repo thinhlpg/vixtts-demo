@@ -99,10 +99,12 @@ def normalize_vietnamese_text(text):
     text = (
         TTSnorm(text, unknown=False, lower=False, rule=True)
         .replace("..", ".")
+        .replace("!.", "!")
+        .replace("?.", "?")
         .replace(" .", ".")
         .replace(" ,", ",")
-        .replace("\"", "")
-        .replace("\'", "")
+        .replace('"', "")
+        .replace("'", "")
         .replace("AI", "Ây Ai")
         .replace("A.I", "Ây Ai")
     )
@@ -173,6 +175,7 @@ def run_tts(lang, tts_text, speaker_audio_file, use_deepfilter, normalize_text):
         sentences = sent_tokenize(tts_text)
 
     from pprint import pprint
+
     pprint(sentences)
 
     wav_chunks = []
