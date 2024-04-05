@@ -14,6 +14,7 @@ import gradio as gr
 import soundfile as sf
 import torch
 import torchaudio
+from underthesea import sent_tokenize
 from unidecode import unidecode
 from vinorm import TTSnorm
 
@@ -165,25 +166,39 @@ def run_tts(lang, tts_text, speaker_audio_file, use_deepfilter, normalize_text):
     if normalize_text and lang == "vi":
         tts_text = normalize_vietnamese_text(tts_text)
 
-    out = XTTS_MODEL.inference(
-        text=tts_text,
-        language=lang,
-        gpt_cond_latent=gpt_cond_latent,
-        speaker_embedding=speaker_embedding,
-        # The following values are carefully chosen for viXTTS
-        temperature=0.3,
-        length_penalty=1.0,
-        repetition_penalty=10.0,
-        top_k=30,
-        top_p=0.85,
-        enable_text_splitting=True,
-    )
+    # Split text by sentence
+    if lang in ["ja", "zh-cn"]:
+        sentences = tts_text.split("。")
+    else:
+        sentences = sent_tokenize(tts_text)
 
+    from pprint import pprint
+    pprint(sentences)
+
+    wav_chunks = []
+    for sentence in sentences:
+        if sentence.strip() == "":
+            continue
+        wav_chunk = XTTS_MODEL.inference(
+            text=sentence,
+            language=lang,
+            gpt_cond_latent=gpt_cond_latent,
+            speaker_embedding=speaker_embedding,
+            # The following values are carefully chosen for viXTTS
+            temperature=0.3,
+            length_penalty=1.0,
+            repetition_penalty=10.0,
+            top_k=30,
+            top_p=0.85,
+            enable_text_splitting=True,
+        )
+        wav_chunks.append(torch.tensor(wav_chunk["wav"]))
+
+    out_wav = torch.cat(wav_chunks, dim=0).unsqueeze(0)
     gr_audio_id = os.path.basename(os.path.dirname(speaker_audio_file))
-    out["wav"] = torch.tensor(out["wav"]).unsqueeze(0)
     out_path = os.path.join(OUTPUT_DIR, f"{get_file_name(tts_text)}_{gr_audio_id}.wav")
     print("Saving output to ", out_path)
-    torchaudio.save(out_path, out["wav"], 24000)
+    torchaudio.save(out_path, out_wav, 24000)
 
     return "Speech generated !", out_path
 
