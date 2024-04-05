@@ -1,6 +1,7 @@
 # This demo
-model/*
-output/*
+model
+model/
+output/
 log.out
 
 # Byte-compiled / optimized / DLL files
