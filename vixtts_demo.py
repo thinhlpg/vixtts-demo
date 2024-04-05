@@ -111,6 +111,21 @@ def normalize_vietnamese_text(text):
     return text
 
 
+def calculate_keep_len(text, lang):
+    """Simple hack for short sentences"""
+    if lang in ["ja", "zh-cn"]:
+        return -1
+
+    word_count = len(text.split())
+    num_punct = text.count(".") + text.count("!") + text.count("?") + text.count(",")
+
+    if word_count < 5:
+        return 15000 * word_count + 2000 * num_punct
+    elif word_count < 10:
+        return 13000 * word_count + 2000 * num_punct
+    return -1
+
+
 def run_tts(lang, tts_text, speaker_audio_file, use_deepfilter, normalize_text):
     global filter_cache, conditioning_latents_cache, cache_queue
 
@@ -195,6 +210,10 @@ def run_tts(lang, tts_text, speaker_audio_file, use_deepfilter, normalize_text):
             top_p=0.85,
             enable_text_splitting=True,
         )
+
+        keep_len = calculate_keep_len(sentence, lang)
+        wav_chunk["wav"] = wav_chunk["wav"][:keep_len]
+
         wav_chunks.append(torch.tensor(wav_chunk["wav"]))
 
     out_wav = torch.cat(wav_chunks, dim=0).unsqueeze(0)
