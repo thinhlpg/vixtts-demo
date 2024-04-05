@@ -15,6 +15,7 @@ import soundfile as sf
 import torch
 import torchaudio
 from unidecode import unidecode
+from vinorm import TTSnorm
 
 from TTS.TTS.tts.configs.xtts_config import XttsConfig
 from TTS.TTS.tts.models.xtts import Xtts
@@ -93,12 +94,21 @@ def get_file_name(text, max_char=50):
     return filename
 
 
-def run_tts(
-    lang,
-    tts_text,
-    speaker_audio_file,
-    use_deepfilter,
-):
+def normalize_vietnamese_text(text):
+    text = (
+        TTSnorm(text, unknown=False, lower=False, rule=True)
+        .replace("..", ".")
+        .replace(" .", ".")
+        .replace(" ,", ",")
+        .replace("\"", "")
+        .replace("\'", "")
+        .replace("AI", "Ây Ai")
+        .replace("A.I", "Ây Ai")
+    )
+    return text
+
+
+def run_tts(lang, tts_text, speaker_audio_file, use_deepfilter, normalize_text):
     global filter_cache, conditioning_latents_cache, cache_queue
 
     if XTTS_MODEL is None:
@@ -152,8 +162,8 @@ def run_tts(
         )
         conditioning_latents_cache[cache_key] = (gpt_cond_latent, speaker_embedding)
 
-    # Normalize text
-    tts_text = tts_text.replace("\n", ".")
+    if normalize_text and lang == "vi":
+        tts_text = normalize_vietnamese_text(tts_text)
 
     out = XTTS_MODEL.inference(
         text=tts_text,
@@ -296,6 +306,11 @@ if __name__ == "__main__":
                     value=True,
                 )
 
+                normalize_text = gr.Checkbox(
+                    label="Normalize Input Text",
+                    value=True,
+                )
+
                 tts_text = gr.Textbox(
                     label="Input Text.",
                     value="Xin chào, tôi là một công cụ chuyển đổi văn bản thành giọng nói tiếng Việt được phát triển bởi nhóm Nón lá.",
@@ -319,6 +334,7 @@ if __name__ == "__main__":
                 tts_text,
                 speaker_reference_audio,
                 use_filter,
+                normalize_text,
             ],
             outputs=[progress_gen, tts_output_audio],
         )
