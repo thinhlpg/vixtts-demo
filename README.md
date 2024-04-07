@@ -46,6 +46,7 @@ We would like to express our gratitude to all libraries, and resources that have
 - [Deepspeed](https://github.com/microsoft/DeepSpeed) for fast inference
 - [Huggingface Hub](https://huggingface.co/) for hosting the model
 - [Gradio](https://www.gradio.app/) for web UI
+- [DeepFilterNet](https://github.com/Rikorose/DeepFilterNet) for noise removal
 
 ## Contact
 
