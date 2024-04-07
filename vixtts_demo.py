@@ -35,7 +35,7 @@ def clear_gpu_cache():
         torch.cuda.empty_cache()
 
 
-def load_model(checkpoint_dir="model/", repo_id="capleaf/viXTTS"):
+def load_model(checkpoint_dir="model/", repo_id="capleaf/viXTTS", use_deepspeed=False):
     global XTTS_MODEL
     clear_gpu_cache()
     os.makedirs(checkpoint_dir, exist_ok=True)
@@ -62,7 +62,7 @@ def load_model(checkpoint_dir="model/", repo_id="capleaf/viXTTS"):
     XTTS_MODEL = Xtts.init_from_config(config)
     yield "Loading model..."
     XTTS_MODEL.load_checkpoint(
-        config, checkpoint_dir=checkpoint_dir, use_deepspeed=False
+        config, checkpoint_dir=checkpoint_dir, use_deepspeed=use_deepspeed
     )
     if torch.cuda.is_available():
         XTTS_MODEL.cuda()
@@ -325,6 +325,8 @@ if __name__ == "__main__":
                     value=MODEL_DIR,
                 )
 
+                use_deepspeed = gr.Checkbox(value=True, label="Use DeepSpeed for faster inference")
+
                 progress_load = gr.Label(label="Progress:")
                 load_btn = gr.Button(value="Step 1 - Load viXTTS model")
 
@@ -381,7 +383,7 @@ if __name__ == "__main__":
 
         load_btn.click(
             fn=load_model,
-            inputs=[checkpoint_dir, repo_id],
+            inputs=[checkpoint_dir, repo_id, use_deepspeed],
             outputs=[progress_load],
         )
 
