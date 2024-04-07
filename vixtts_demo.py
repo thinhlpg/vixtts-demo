@@ -19,8 +19,8 @@ from underthesea import sent_tokenize
 from unidecode import unidecode
 from vinorm import TTSnorm
 
-from TTS.TTS.tts.configs.xtts_config import XttsConfig
-from TTS.TTS.tts.models.xtts import Xtts
+from TTS.tts.configs.xtts_config import XttsConfig
+from TTS.tts.models.xtts import Xtts
 
 XTTS_MODEL = None
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
