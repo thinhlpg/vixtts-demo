@@ -37,6 +37,10 @@ cd vixtts-demo
 4. Inference and Enjoy 🤗
 5. The result will be saved in `output/`
 
+## Limitation
+- Subpar performance for input sentences under 10 words in Vietnamese language (yielding inconsistent output and odd trailing sounds).
+- This model is only fine-tuned in Vietnamese. The model's effectiveness with languages other than Vietnamese hasn't been tested, potentially reducing quality.
+
 ## Acknowledgements
 
 We would like to express our gratitude to all libraries, and resources that have played a role in the development of this demo, especially:
