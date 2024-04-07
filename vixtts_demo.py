@@ -314,6 +314,11 @@ if __name__ == "__main__":
         REFERENCE_AUDIO = os.abspath(args.reference_audio)
 
     with gr.Blocks() as demo:
+        intro = """
+        # viXTTS Inference Demo
+        Visit viXTTS on HuggingFace: [viXTTS](https://huggingface.co/capleaf/viXTTS)
+        """
+        gr.Markdown(intro)
         with gr.Row():
             with gr.Column() as col1:
                 repo_id = gr.Textbox(
@@ -325,10 +330,14 @@ if __name__ == "__main__":
                     value=MODEL_DIR,
                 )
 
-                use_deepspeed = gr.Checkbox(value=True, label="Use DeepSpeed for faster inference")
+                use_deepspeed = gr.Checkbox(
+                    value=True, label="Use DeepSpeed for faster inference"
+                )
 
                 progress_load = gr.Label(label="Progress:")
-                load_btn = gr.Button(value="Step 1 - Load viXTTS model")
+                load_btn = gr.Button(
+                    value="Step 1 - Load viXTTS model", variant="primary"
+                )
 
             with gr.Column() as col2:
                 speaker_reference_audio = gr.Audio(
@@ -362,7 +371,7 @@ if __name__ == "__main__":
                 )
 
                 use_filter = gr.Checkbox(
-                    label="Use Filter",
+                    label="Denoise Reference Audio",
                     value=True,
                 )
 
@@ -375,7 +384,7 @@ if __name__ == "__main__":
                     label="Input Text.",
                     value="Xin chào, tôi là một công cụ chuyển đổi văn bản thành giọng nói tiếng Việt được phát triển bởi nhóm Nón lá.",
                 )
-                tts_btn = gr.Button(value="Step 2 - Inference")
+                tts_btn = gr.Button(value="Step 2 - Inference", variant="primary")
 
             with gr.Column() as col3:
                 progress_gen = gr.Label(label="Progress:")
