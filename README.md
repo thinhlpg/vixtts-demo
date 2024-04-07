@@ -7,6 +7,7 @@ The model can be accessed at: [viXTTS on Hugging Face](https://huggingface.co/ca
 ## Online usage (Recommended)
 
 For a quick demonstration, please refer to [this notebook](./viXTTS_Demo.ipynb) on Google Colab.
+Tutorial (Vietnamese): https://youtu.be/pbwEbpOy0m8?feature=shared
 ![viXTTS Colab Demo](assets/vixtts_colab.png)
 ## Local Usage
 
